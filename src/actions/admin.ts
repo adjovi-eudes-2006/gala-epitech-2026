@@ -264,8 +264,9 @@ export async function deleteEvent(
     if (error instanceof Error && error.message.includes("Accès refusé")) {
       return { success: false, error: error.message };
     }
-    console.error("Delete event error:", error);
-    return { success: false, error: "Erreur lors de la suppression" };
+    const message = error instanceof Error ? error.message : "Erreur inconnue";
+    console.error("Delete event error:", message);
+    return { success: false, error: message };
   }
 }
 
