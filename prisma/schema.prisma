@@ -46,11 +46,12 @@ model Order {
 }
 
 model Ticket {
-  id         String          @id @default(uuid())
-  orderId    String
-  order      Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  categoryId String
-  category   TicketCategory  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  isUsed     Boolean         @default(false)
-  usedAt     DateTime?
+  id           String          @id @default(uuid())
+  orderId      String
+  order        Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  categoryId   String
+  category     TicketCategory  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  secureToken  String          @unique
+  isUsed       Boolean         @default(false)
+  usedAt       DateTime?
 }

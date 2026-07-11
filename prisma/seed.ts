@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import crypto from "node:crypto";
 
 const prisma = new PrismaClient();
 
@@ -93,10 +94,10 @@ async function main() {
 
   await prisma.ticket.createMany({
     data: [
-      { orderId: order1.id, categoryId: standard.id },
-      { orderId: order1.id, categoryId: standard.id },
-      { orderId: order1.id, categoryId: standard.id },
-      { orderId: order1.id, categoryId: vip.id },
+      { orderId: order1.id, categoryId: standard.id, secureToken: crypto.randomBytes(32).toString("hex") },
+      { orderId: order1.id, categoryId: standard.id, secureToken: crypto.randomBytes(32).toString("hex") },
+      { orderId: order1.id, categoryId: standard.id, secureToken: crypto.randomBytes(32).toString("hex") },
+      { orderId: order1.id, categoryId: vip.id, secureToken: crypto.randomBytes(32).toString("hex") },
     ],
   });
 
@@ -114,7 +115,7 @@ async function main() {
 
   await prisma.ticket.createMany({
     data: [
-      { orderId: order2.id, categoryId: prestige.id },
+      { orderId: order2.id, categoryId: prestige.id, secureToken: crypto.randomBytes(32).toString("hex") },
     ],
   });
 

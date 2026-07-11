@@ -1,5 +1,6 @@
 "use server";
 
+import crypto from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import { verifyAdminSessionOrThrow } from "@/lib/admin-auth";
 import { eventSchema } from "@/lib/validations";
@@ -87,33 +88,23 @@ export async function validateOrder(
         data: { status: "VALIDATED" },
       });
 
-      const ticketsData = Array.from({ length: order.tickets.length }, () => ({
-        orderId: order.id,
-        categoryId: order.tickets[0].categoryId,
-      }));
+      for (const t of order.tickets) {
+        await tx.ticket.update({
+          where: { id: t.id },
+          data: { secureToken: crypto.randomBytes(32).toString("hex") },
+        });
+      }
 
       const updatedOrder = await tx.order.findUnique({
         where: { id: orderId },
         include: { tickets: { include: { category: true } } },
       });
 
-      const categoryCounts: Record<string, number> = {};
+      const catCounts: Record<string, number> = {};
       if (updatedOrder) {
         for (const t of updatedOrder.tickets) {
-          categoryCounts[t.categoryId] = (categoryCounts[t.categoryId] || 0) + 1;
+          catCounts[t.categoryId] = (catCounts[t.categoryId] || 0) + 1;
         }
-      }
-
-      const createdTickets = await tx.ticket.createManyAndReturn({
-        data: updatedOrder!.tickets.map((t) => ({
-          orderId: order.id,
-          categoryId: t.categoryId,
-        })),
-      });
-
-      const catCounts: Record<string, number> = {};
-      for (const t of createdTickets) {
-        catCounts[t.categoryId] = (catCounts[t.categoryId] || 0) + 1;
       }
 
       for (const [catId, count] of Object.entries(catCounts)) {
@@ -193,6 +184,7 @@ export async function getDashboardData(): Promise<DashboardData | null> {
           orderId: t.orderId,
           categoryId: t.categoryId,
           categoryName: t.category.name,
+          secureToken: t.secureToken,
           isUsed: t.isUsed,
           usedAt: t.usedAt?.toISOString() ?? null,
         })),
@@ -269,4 +261,3 @@ export async function deleteEvent(
     return { success: false, error: message };
   }
 }
-

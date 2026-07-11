@@ -13,7 +13,7 @@ interface OrderStatusViewProps {
     status: string;
     buyerName: string;
     totalAmount: number;
-    tickets: { id: string; categoryName: string; isUsed: boolean }[];
+    tickets: { id: string; categoryName: string; secureToken: string; isUsed: boolean }[];
     eventTitle: string;
     eventDate: string;
     eventLocation: string;
@@ -32,7 +32,7 @@ export function OrderStatusView({ order }: OrderStatusViewProps) {
       order.tickets.forEach((ticket) => {
         const canvas = canvasRefs.current[ticket.id];
         if (canvas) {
-          QRCode.toCanvas(canvas, ticket.id, {
+          QRCode.toCanvas(canvas, ticket.secureToken, {
             width: 200, margin: 2, color: { dark: "#09090b", light: "#ffffff" },
           });
         }
@@ -81,7 +81,7 @@ export function OrderStatusView({ order }: OrderStatusViewProps) {
             </div>
             <div className="text-right">
               <p className="text-zinc-400 text-sm">Statut</p>
-              <p className="text-emerald-400 font-semibold">Validé ✅</p>
+              <p className="text-emerald-400 font-semibold">Validé</p>
             </div>
           </div>
         </Card>
@@ -116,7 +116,7 @@ export function OrderStatusView({ order }: OrderStatusViewProps) {
                     </div>
                     <div className="flex flex-col items-center gap-1 flex-shrink-0">
                       <canvas ref={(el) => { canvasRefs.current[ticket.id] = el; }} className="rounded-xl bg-white p-2" />
-                      <span className="text-[10px] text-zinc-600 font-mono">#{ticket.id.slice(0, 8).toUpperCase()}</span>
+                      <span className="text-[10px] text-zinc-600 font-mono">#{ticket.secureToken.slice(0, 8).toUpperCase()}</span>
                     </div>
                   </div>
                   <div className="border-t border-zinc-800 pt-3 mt-4 flex justify-between items-center">

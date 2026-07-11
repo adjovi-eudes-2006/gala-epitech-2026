@@ -36,6 +36,7 @@ export interface TicketData {
   orderId: string;
   categoryId: string;
   categoryName: string;
+  secureToken: string;
   isUsed: boolean;
   usedAt: string | null;
 }

@@ -1,39 +1,39 @@
 "use server";
 
+import crypto from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import { verifyAdminSessionOrThrow } from "@/lib/admin-auth";
 import { orderSchema } from "@/lib/validations";
 import type { VerificationResult } from "@/types";
 
-export async function verifyAndUseTicket(uuid: string): Promise<VerificationResult> {
+export async function validateTicketEntry(
+  secureToken: string
+): Promise<VerificationResult> {
   try {
     await verifyAdminSessionOrThrow();
 
-    if (!uuid || uuid.length < 8) {
+    if (!secureToken || secureToken.length < 16) {
       return { status: "INVALID", message: "Code billet invalide" };
     }
 
     const result = await prisma.ticket.updateMany({
-      where: { id: uuid, isUsed: false },
+      where: { secureToken, isUsed: false },
       data: { isUsed: true, usedAt: new Date() },
     });
 
     if (result.count === 0) {
       const existing = await prisma.ticket.findUnique({
-        where: { id: uuid },
-        include: {
-          order: true,
-          category: true,
-        },
+        where: { secureToken },
+        include: { order: true, category: true },
       });
 
       if (!existing) {
-        return { status: "INVALID", message: "Billet inconnu ou contrefait" };
+        return { status: "INVALID", message: "FAUX BILLET / NON RECONNU" };
       }
 
       return {
         status: "ALREADY_USED",
-        message: "Billet déjà scanné",
+        message: "ALERTE : BILLET DÉJÀ UTILISÉ",
         buyer: existing.order.buyerName,
         category: existing.category.name,
         date: existing.usedAt?.toISOString(),
@@ -41,11 +41,8 @@ export async function verifyAndUseTicket(uuid: string): Promise<VerificationResu
     }
 
     const ticket = await prisma.ticket.findUnique({
-      where: { id: uuid },
-      include: {
-        order: true,
-        category: true,
-      },
+      where: { secureToken },
+      include: { order: true, category: true },
     });
 
     return {
@@ -58,8 +55,55 @@ export async function verifyAndUseTicket(uuid: string): Promise<VerificationResu
     if (error instanceof Error && error.message.includes("Accès refusé")) {
       return { status: "INVALID", message: error.message };
     }
-    console.error("Verify ticket error:", error);
+    console.error("Validate ticket error:", error);
     return { status: "INVALID", message: "Erreur de vérification" };
+  }
+}
+
+export async function getMyTicket(
+  phone: string,
+  momoReference: string
+): Promise<{
+  success: boolean;
+  error?: string;
+  orderId?: string;
+  buyerName?: string;
+  eventTitle?: string;
+  tickets?: { id: string; secureToken: string; categoryName: string }[];
+}> {
+  try {
+    if (!phone || phone.trim().length < 4 || !momoReference || momoReference.trim().length < 4) {
+      return { success: false, error: "Informations invalides ou billet introuvable" };
+    }
+
+    const order = await prisma.order.findFirst({
+      where: {
+        buyerPhone: phone.trim(),
+        referenceMomo: momoReference.trim(),
+      },
+      include: {
+        tickets: { include: { category: true } },
+        event: true,
+      },
+    });
+
+    if (!order) {
+      return { success: false, error: "Informations invalides ou billet introuvable" };
+    }
+
+    return {
+      success: true,
+      orderId: order.id,
+      buyerName: order.buyerName,
+      eventTitle: order.event.title,
+      tickets: order.tickets.map((t) => ({
+        id: t.id,
+        secureToken: t.secureToken,
+        categoryName: t.category.name,
+      })),
+    };
+  } catch {
+    return { success: false, error: "Informations invalides ou billet introuvable" };
   }
 }
 
@@ -89,6 +133,7 @@ export async function getOrderById(orderId: string) {
         orderId: t.orderId,
         categoryId: t.categoryId,
         categoryName: t.category.name,
+        secureToken: t.secureToken,
         isUsed: t.isUsed,
         usedAt: t.usedAt?.toISOString() ?? null,
       })),
@@ -175,7 +220,10 @@ export async function createOrder(formData: FormData) {
         totalAmount,
         status: "PENDING",
         tickets: {
-          create: ticketEntries,
+          create: ticketEntries.map((te) => ({
+            categoryId: te.categoryId,
+            secureToken: crypto.randomBytes(32).toString("hex"),
+          })),
         },
       },
     });
