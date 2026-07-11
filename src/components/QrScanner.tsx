@@ -113,19 +113,8 @@ export function QrScanner() {
   }, [sound]);
 
   const startCamera = useCallback(async () => {
-    console.log("startCamera: requesting permission...");
+    console.log("startCamera: initializing scanner...");
     setCamError(null);
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-      console.log("Camera permission granted, stream obtained");
-      stream.getTracks().forEach((t) => t.stop());
-    } catch (err) {
-      console.log("Camera permission denied/failed:", err);
-      const msg = camErrorToMessage(err as DOMException);
-      setCamError({ type: (err as DOMException).name, message: msg });
-      return;
-    }
 
     if (initGuard.current) {
       console.log("startCamera: initGuard already true, skipping");
@@ -159,10 +148,13 @@ export function QrScanner() {
       scanner.render(
         (decoded) => {
           console.log("QR decoded:", decoded.slice(0, 16) + "...");
-          processToken(decoded);
+          if (decoded) processToken(decoded);
         },
-        (err) => {
-          console.log("Scanner error callback:", err);
+        (errMsg) => {
+          console.log("Scanner error callback:", errMsg);
+          if (errMsg && !camError) {
+            setCamError({ type: "ScannerError", message: typeof errMsg === "string" ? errMsg : "Erreur de balayage" });
+          }
         }
       );
       console.log("startCamera: scanner.render succeeded");
