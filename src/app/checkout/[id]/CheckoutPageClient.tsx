@@ -76,7 +76,7 @@ export function CheckoutPageClient({ eventId, eventTitle, cart, total }: Checkou
           <div>
             <h3 className="font-semibold text-white text-sm">Paiement par MTN MoMo</h3>
             <p className="text-zinc-400 text-xs mt-1 leading-relaxed">
-              Effectuez votre transfert MTN MoMo vers le <strong className="text-gala-400">01 97 00 00 00</strong> (Koffi A.)
+              Effectuez votre transfert MTN MoMo vers le <strong className="text-gala-400">{process.env.NEXT_PUBLIC_MOMO_PHONE_NUMBER?.replace(/(\d{2})(?=\d)/g, "$1 ")}</strong> (Koffi A.)
               du montant exact de <strong className="text-gala-400">{formatPrice(total)}</strong>,
               puis saisissez la référence SMS reçue ci-dessous.
             </p>
