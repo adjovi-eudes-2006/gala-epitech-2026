@@ -119,7 +119,7 @@ export function QrScanner() {
     initGuard.current = true;
 
     if (!videoRef.current) {
-      console.log("QrScanner: videoRef not ready yet");
+      console.error("QrScanner: videoRef.current is null — <video> not mounted");
       return;
     }
 
@@ -268,21 +268,19 @@ export function QrScanner() {
                 </div>
               )}
 
+              <div className={`w-full max-w-sm ${step === "scanning" && !camError ? "" : "hidden"}`}>
+                <div className="w-full min-h-[300px] rounded-2xl overflow-hidden border-2 border-amber-500/30 bg-black">
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    playsInline
+                    muted
+                    className="w-full h-full object-cover min-h-[300px]"
+                  />
+                </div>
+              </div>
               {step === "scanning" && !camError && (
-                <>
-                  <div className="w-full max-w-sm">
-                    <div className="w-full min-h-[300px] rounded-2xl overflow-hidden border-2 border-amber-500/30 bg-black">
-                      <video
-                        ref={videoRef}
-                        autoPlay
-                        playsInline
-                        muted
-                        className="w-full h-full object-cover min-h-[300px]"
-                      />
-                    </div>
-                  </div>
-                  <p className="text-slate-400 text-sm mt-4 text-center">Placez le QR code dans le cadre</p>
-                </>
+                <p className="text-slate-400 text-sm mt-4 text-center">Placez le QR code dans le cadre</p>
               )}
             </div>
 
