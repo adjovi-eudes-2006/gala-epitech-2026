@@ -240,6 +240,16 @@ export async function createOrder(formData: FormData) {
   }
 }
 
+export async function checkOrderExists(orderId: string): Promise<boolean> {
+  try {
+    if (!orderId) return false;
+    const order = await prisma.order.findUnique({ where: { id: orderId }, select: { id: true } });
+    return order !== null;
+  } catch {
+    return false;
+  }
+}
+
 export async function findOrdersByPhone(
   phone: string
 ): Promise<{ error?: string; orders?: { id: string; eventTitle: string; status: string; totalAmount: number }[] }> {
