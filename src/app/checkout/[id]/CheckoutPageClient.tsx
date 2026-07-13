@@ -9,14 +9,25 @@ import { createOrder } from "@/actions/tickets";
 import { formatPrice } from "@/lib/utils";
 import { ArrowLeft, Smartphone, User, Mail, Phone, KeyRound, Info } from "lucide-react";
 
+interface PaySettings {
+  beneficiaryName: string;
+  moovNumber: string;
+  mtnNumber: string;
+}
+
 interface CheckoutPageClientProps {
   eventId: string;
   eventTitle: string;
   cart: { categoryId: string; name: string; price: number; quantity: number }[];
   total: number;
+  paySettings: PaySettings;
 }
 
-export function CheckoutPageClient({ eventId, eventTitle, cart, total }: CheckoutPageClientProps) {
+function formatPhone(num: string) {
+  return num.replace(/(\d{2})(?=\d)/g, "$1 ");
+}
+
+export function CheckoutPageClient({ eventId, eventTitle, cart, total, paySettings }: CheckoutPageClientProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -73,13 +84,27 @@ export function CheckoutPageClient({ eventId, eventTitle, cart, total }: Checkou
       <Card className="p-5 mb-6 border-gala-500/20 bg-gala-500/5">
         <div className="flex items-start gap-3">
           <Smartphone className="w-5 h-5 text-gala-400 flex-shrink-0 mt-0.5" />
-          <div>
-            <h3 className="font-semibold text-white text-sm">Paiement par MTN MoMo</h3>
-            <p className="text-zinc-400 text-xs mt-1 leading-relaxed">
-              Effectuez votre transfert MTN MoMo vers le <strong className="text-gala-400">{process.env.NEXT_PUBLIC_MOMO_PHONE_NUMBER?.replace(/(\d{2})(?=\d)/g, "$1 ")}</strong> (Koffi A.)
-              du montant exact de <strong className="text-gala-400">{formatPrice(total)}</strong>,
-              puis saisissez la référence SMS reçue ci-dessous.
+          <div className="flex-1">
+            <h3 className="font-semibold text-white text-sm mb-3">Paiement par Mobile Money</h3>
+            <p className="text-zinc-500 text-xs mb-3">
+              Choisissez le numéro correspondant à votre opérateur (Moov ou MTN) pour effectuer votre transfert du montant exact de <strong className="text-gala-400">{formatPrice(total)}</strong>, puis saisissez la référence SMS reçue ci-dessous.
             </p>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between bg-blue-500/10 border border-blue-500/20 rounded-xl px-4 py-3">
+                <div>
+                  <p className="text-xs text-blue-300 font-semibold">Moov Money</p>
+                  <p className="text-lg font-bold text-white">{formatPhone(paySettings.moovNumber)}</p>
+                </div>
+                <p className="text-xs text-zinc-400">{paySettings.beneficiaryName}</p>
+              </div>
+              <div className="flex items-center justify-between bg-gala-500/10 border border-gala-500/20 rounded-xl px-4 py-3">
+                <div>
+                  <p className="text-xs text-gala-300 font-semibold">MTN MoMo</p>
+                  <p className="text-lg font-bold text-white">{formatPhone(paySettings.mtnNumber)}</p>
+                </div>
+                <p className="text-xs text-zinc-400">{paySettings.beneficiaryName}</p>
+              </div>
+            </div>
           </div>
         </div>
       </Card>

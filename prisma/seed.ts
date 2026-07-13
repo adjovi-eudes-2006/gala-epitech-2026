@@ -116,6 +116,19 @@ async function main() {
     ],
   });
 
+  await prisma.platformSettings.upsert({
+    where: { id: "singleton" },
+    update: {},
+    create: {
+      id: "singleton",
+      beneficiaryName: "MELE AMEN MELVIE",
+      moovNumber: "0145912093",
+      mtnNumber: "0146343485",
+    },
+  });
+
+  console.log("✅ Platform settings created (Moov: 0145912093 / MTN: 0146343485)");
+
   console.log("✅ Test orders created:");
   console.log("   - Koffi Amadou (4 tickets, 20 000 FCFA, ref: REF9A2B3C77)");
   console.log("   - Aïchatou Diallo (1 table prestige, 100 000 FCFA, ref: REF4D5E6F88)");

@@ -56,6 +56,14 @@ model Ticket {
   usedAt       DateTime?
 }
 
+model PlatformSettings {
+  id               String   @id @default("singleton")
+  beneficiaryName  String
+  moovNumber       String
+  mtnNumber        String
+  updatedAt        DateTime @updatedAt
+}
+
 model IncomingSmsLog {
   id           String    @id @default(uuid())
   rawText      String    @db.Text

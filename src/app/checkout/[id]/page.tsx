@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { CheckoutPageClient } from "./CheckoutPageClient";
+import { getPlatformSettings } from "@/actions/settings";
 
 export const dynamic = "force-dynamic";
 
@@ -48,10 +49,21 @@ export default async function CheckoutPage({ params, searchParams }: Props) {
   if (cart.length === 0) notFound();
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const settings = await getPlatformSettings();
 
   return (
     <main className="min-h-screen py-10 px-4">
-      <CheckoutPageClient eventId={event.id} eventTitle={event.title} cart={cart} total={total} />
+      <CheckoutPageClient
+        eventId={event.id}
+        eventTitle={event.title}
+        cart={cart}
+        total={total}
+        paySettings={{
+          beneficiaryName: settings.beneficiaryName,
+          moovNumber: settings.moovNumber,
+          mtnNumber: settings.mtnNumber,
+        }}
+      />
     </main>
   );
 }
