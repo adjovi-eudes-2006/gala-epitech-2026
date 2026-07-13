@@ -56,6 +56,13 @@ model Ticket {
   usedAt       DateTime?
 }
 
+model AdminUser {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  passwordHash String
+  updatedAt    DateTime @updatedAt
+}
+
 model PlatformSettings {
   id               String   @id @default("singleton")
   beneficiaryName  String
