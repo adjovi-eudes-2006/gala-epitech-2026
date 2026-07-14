@@ -59,6 +59,11 @@ function TicketCard({
         width: 240,
         margin: 2,
         color: { dark: "#09090b", light: "#ffffff" },
+      }, (error) => {
+        if (!error && canvas) {
+          canvas.style.width = "100%";
+          canvas.style.height = "100%";
+        }
       });
     }
   }, [ticket.id, ticket.secureToken, canvasRefs]);
