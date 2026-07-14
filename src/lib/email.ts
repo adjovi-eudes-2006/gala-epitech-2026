@@ -4,7 +4,7 @@ const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
 
-const notificationEmail = process.env.NOTIFICATION_EMAIL || "weziza.adjovi@gmail.com";
+const notificationEmail = process.env.NOTIFICATION_EMAIL || "gillio2323@gmail.com";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://decogef.vercel.app";
 
