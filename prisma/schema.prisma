@@ -16,6 +16,8 @@ model Event {
   location    String
   coverImage           String           @db.Text
   ticketBackgroundUrl  String?
+  ticketEyebrowText    String?          @default("INVITATION")
+  ticketQuoteText      String?          @default("Une soirée d'exception vous attend")
   categories           TicketCategory[]
   orders      Order[]
   createdAt   DateTime         @default(now())

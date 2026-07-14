@@ -234,6 +234,8 @@ export async function updateEvent(
     const location = formData.get("location") as string;
     const coverImage = formData.get("coverImage") as string;
     const rawTicketBackgroundUrl = (formData.get("ticketBackgroundUrl") as string) || "";
+    const rawTicketEyebrowText = (formData.get("ticketEyebrowText") as string) || "";
+    const rawTicketQuoteText = (formData.get("ticketQuoteText") as string) || "";
 
     const rawCategories = formData.get("categories") as string;
     let parsedCategories: { id?: string; name: string; price: number }[];
@@ -264,6 +266,8 @@ export async function updateEvent(
           location,
           coverImage: coverImage || event.coverImage,
           ticketBackgroundUrl: rawTicketBackgroundUrl || event.ticketBackgroundUrl,
+          ticketEyebrowText: rawTicketEyebrowText || event.ticketEyebrowText || "INVITATION",
+          ticketQuoteText: rawTicketQuoteText || event.ticketQuoteText || "Une soirée d'exception vous attend",
         },
       });
 

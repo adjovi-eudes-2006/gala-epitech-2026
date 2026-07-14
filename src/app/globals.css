@@ -14,7 +14,7 @@
 }
 
 @media print {
-  @page { margin: 0.5in; size: landscape; }
+  @page { margin: 0.3in; size: landscape; }
   body { background: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   body * { visibility: hidden; }
   .print-area, .print-area * { visibility: visible; }
@@ -34,5 +34,7 @@
   .print-area .via-amber-500\/40,
   .print-area .to-amber-500\/60 { opacity: 0.6 !important; }
   .print-area .from-amber-500\/60 { background: linear-gradient(to bottom, rgba(212,175,55,0.6), rgba(212,175,55,0.4), rgba(212,175,55,0.6)) !important; }
+  .print-area .flex-col { flex-direction: row !important; }
+  .print-area [class*="sm:hidden"] { display: none !important; }
   .no-print { display: none !important; }
 }

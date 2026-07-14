@@ -23,6 +23,8 @@ interface EventEditFormProps {
     location: string;
     coverImage: string;
     ticketBackgroundUrl?: string | null;
+    ticketEyebrowText?: string | null;
+    ticketQuoteText?: string | null;
     categories: { id: string; name: string; price: number; soldQuantity: number }[];
   };
 }
@@ -42,6 +44,8 @@ export function EventEditForm({ event }: EventEditFormProps) {
     description: event.description,
     date: event.date.slice(0, 16),
     location: event.location,
+    ticketEyebrowText: event.ticketEyebrowText ?? "INVITATION",
+    ticketQuoteText: event.ticketQuoteText ?? "Une soirée d'exception vous attend",
   });
   const [error, setError] = useState("");
 
@@ -94,6 +98,8 @@ export function EventEditForm({ event }: EventEditFormProps) {
     fd.append("location", form.location);
     fd.append("coverImage", imageBase64);
     fd.append("ticketBackgroundUrl", ticketBgBase64);
+    fd.append("ticketEyebrowText", form.ticketEyebrowText);
+    fd.append("ticketQuoteText", form.ticketQuoteText);
     fd.append("categories", JSON.stringify(parsed));
 
     const result = await updateEvent(event.id, fd);
@@ -213,6 +219,24 @@ export function EventEditForm({ event }: EventEditFormProps) {
                   <span className="text-sm">Fond billet</span>
                 </button>
               )}
+            </div>
+          </div>
+
+          <div className="border-t border-zinc-800 pt-4 mt-2">
+            <h3 className="font-display text-base font-bold text-white mb-3">Personnalisation du billet</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <Input
+                label="Texte d'en-tête du billet"
+                placeholder="INVITATION"
+                value={form.ticketEyebrowText}
+                onChange={(e) => setForm({ ...form, ticketEyebrowText: e.target.value })}
+              />
+              <Input
+                label="Citation en bas du billet"
+                placeholder="Une soirée d'exception vous attend"
+                value={form.ticketQuoteText}
+                onChange={(e) => setForm({ ...form, ticketQuoteText: e.target.value })}
+              />
             </div>
           </div>
         </Card>

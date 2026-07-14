@@ -18,16 +18,18 @@ interface OrderStatusViewProps {
     eventDate: string;
     eventLocation: string;
     ticketBackgroundUrl?: string;
+    ticketEyebrowText?: string;
+    ticketQuoteText?: string;
   };
 }
 
 function CornerOrnaments() {
   return (
     <>
-      <div className="absolute top-3 left-3 w-6 h-6 border-t-2 border-l-2 border-amber-500/60 rounded-tl" />
-      <div className="absolute top-3 right-3 w-6 h-6 border-t-2 border-r-2 border-amber-500/60 rounded-tr" />
-      <div className="absolute bottom-3 left-3 w-6 h-6 border-b-2 border-l-2 border-amber-500/60 rounded-bl" />
-      <div className="absolute bottom-3 right-3 w-6 h-6 border-b-2 border-r-2 border-amber-500/60 rounded-br" />
+      <div className="absolute top-2 left-2 sm:top-3 sm:left-3 w-4 h-4 sm:w-6 sm:h-6 border-t-2 border-l-2 border-amber-500/60 rounded-tl" />
+      <div className="absolute top-2 right-2 sm:top-3 sm:right-3 w-4 h-4 sm:w-6 sm:h-6 border-t-2 border-r-2 border-amber-500/60 rounded-tr" />
+      <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 w-4 h-4 sm:w-6 sm:h-6 border-b-2 border-l-2 border-amber-500/60 rounded-bl" />
+      <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 w-4 h-4 sm:w-6 sm:h-6 border-b-2 border-r-2 border-amber-500/60 rounded-br" />
     </>
   );
 }
@@ -47,12 +49,14 @@ function TicketCard({
 }) {
   const bgUrl = order.ticketBackgroundUrl;
   const ticketRef = useRef<HTMLDivElement>(null);
+  const eyebrowText = order.ticketEyebrowText || "INVITATION";
+  const quoteText = order.ticketQuoteText || "Une soirée d'exception vous attend";
 
   useEffect(() => {
     const canvas = canvasRefs.current[ticket.id];
     if (canvas) {
       QRCode.toCanvas(canvas, ticket.secureToken, {
-        width: 160,
+        width: 240,
         margin: 2,
         color: { dark: "#09090b", light: "#ffffff" },
       });
@@ -60,7 +64,7 @@ function TicketCard({
   }, [ticket.id, ticket.secureToken, canvasRefs]);
 
   return (
-    <div ref={ticketRef} className="print-area">
+    <div ref={ticketRef} className="print-area w-full">
       <div
         className="relative bg-zinc-950 border-2 border-amber-500/40 rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(212,175,55,0.08)]"
         style={bgUrl ? { backgroundImage: `url(${bgUrl})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
@@ -72,65 +76,80 @@ function TicketCard({
         <div className="relative z-10">
           <CornerOrnaments />
 
-          <div className="flex min-h-[260px]">
-            {/* LEFT SECTION */}
-            <div className="flex-1 p-6 sm:p-8 relative overflow-hidden">
+          <div className="flex flex-col sm:flex-row">
+            {/* TOP / LEFT — INFO SECTION */}
+            <div className="flex-1 p-5 sm:p-6 md:p-8 relative overflow-hidden">
               <div className="absolute inset-0 opacity-[0.03]">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full bg-amber-400 blur-3xl" />
               </div>
               <div className="relative z-10 text-center">
-                <p className="font-display text-amber-400/60 text-xs tracking-[0.4em] uppercase mb-2">
-                  {ticket.isUsed ? "UTILISÉ" : "INVITATION"}
+                <p className="font-display text-amber-400/60 text-xs sm:text-sm tracking-[0.4em] uppercase mb-2">
+                  {ticket.isUsed ? "UTILISÉ" : eyebrowText}
                 </p>
-                <h2 className="font-display text-2xl sm:text-3xl font-bold text-white leading-tight tracking-wide">
+                <h2 className="font-display text-xl sm:text-2xl md:text-3xl font-bold text-white leading-tight tracking-wide break-words">
                   {order.eventTitle}
                 </h2>
-                <p className="text-amber-400/80 text-sm font-display italic mt-1">{ticket.categoryName}</p>
+                <p className="text-amber-400/80 text-xs sm:text-sm font-display italic mt-1">{ticket.categoryName}</p>
 
-                <div className="w-12 h-px bg-gradient-to-r from-transparent via-amber-500 to-transparent mx-auto my-5" />
+                <div className="w-10 sm:w-12 h-px bg-gradient-to-r from-transparent via-amber-500 to-transparent mx-auto my-4 sm:my-5" />
 
-                <div className="space-y-3 text-left max-w-xs mx-auto">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center flex-shrink-0">
-                      <Calendar className="w-4 h-4 text-amber-400" />
+                <div className="space-y-3 sm:space-y-3.5 text-left max-w-xs mx-auto">
+                  <div className="flex items-center gap-2.5 sm:gap-3">
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-amber-500/10 flex items-center justify-center flex-shrink-0">
+                      <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />
                     </div>
-                    <div>
-                      <p className="text-[10px] text-zinc-600 uppercase tracking-wider font-medium">Date</p>
-                      <p className="text-zinc-200 text-sm font-medium">{formatDateShort(order.eventDate)}</p>
+                    <div className="min-w-0">
+                      <p className="text-[9px] sm:text-[10px] text-zinc-600 uppercase tracking-wider font-medium">Date</p>
+                      <p className="text-zinc-200 text-xs sm:text-sm font-medium truncate">{formatDateShort(order.eventDate)}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center flex-shrink-0">
-                      <MapPin className="w-4 h-4 text-amber-400" />
+                  <div className="flex items-center gap-2.5 sm:gap-3">
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-amber-500/10 flex items-center justify-center flex-shrink-0">
+                      <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />
                     </div>
-                    <div>
-                      <p className="text-[10px] text-zinc-600 uppercase tracking-wider font-medium">Lieu</p>
-                      <p className="text-zinc-200 text-sm font-medium">{order.eventLocation}</p>
+                    <div className="min-w-0">
+                      <p className="text-[9px] sm:text-[10px] text-zinc-600 uppercase tracking-wider font-medium">Lieu</p>
+                      <p className="text-zinc-200 text-xs sm:text-sm font-medium truncate">{order.eventLocation}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center flex-shrink-0">
-                      <Shirt className="w-4 h-4 text-amber-400" />
+                  <div className="flex items-center gap-2.5 sm:gap-3">
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-amber-500/10 flex items-center justify-center flex-shrink-0">
+                      <Shirt className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400" />
                     </div>
-                    <div>
-                      <p className="text-[10px] text-zinc-600 uppercase tracking-wider font-medium">Dress Code</p>
-                      <p className="text-zinc-200 text-sm font-medium">Tenue de soirée</p>
+                    <div className="min-w-0">
+                      <p className="text-[9px] sm:text-[10px] text-zinc-600 uppercase tracking-wider font-medium">Dress Code</p>
+                      <p className="text-zinc-200 text-xs sm:text-sm font-medium">Tenue de soirée</p>
                     </div>
                   </div>
                 </div>
 
-                <p className="text-amber-400/40 italic text-xs mt-5 font-display">
-                  &ldquo;Une soirée d&apos;exception vous attend&rdquo;
-                </p>
+                {quoteText && (
+                  <p className="text-amber-400/40 italic text-[10px] sm:text-xs mt-4 sm:mt-5 font-display">
+                    &ldquo;{quoteText}&rdquo;
+                  </p>
+                )}
               </div>
             </div>
 
-            {/* PERFORATED DIVIDER */}
-            <div className="relative flex-shrink-0">
-              <div className="absolute inset-0 flex flex-col items-center justify-center px-1">
-                <div className="w-px h-full bg-gradient-to-b from-amber-500/60 via-amber-500/40 to-amber-500/60"
+            {/* HORIZONTAL PERFORATED DIVIDER — mobile only */}
+            <div className="sm:hidden relative w-[calc(100%-3rem)] mx-auto h-px my-0">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-full h-px"
                   style={{
-                    backgroundImage: `repeating-linear-gradient(to bottom, #D4AF37 0px, #D4AF37 2px, transparent 2px, transparent 10px)`,
+                    backgroundImage: `repeating-linear-gradient(to right, #D4AF37 0px, #D4AF37 2px, transparent 2px, transparent 8px)`,
+                  }}
+                />
+              </div>
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 -ml-1.5 w-2.5 h-2.5 rounded-full bg-zinc-950 border border-amber-500/40" />
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 -mr-1.5 w-2.5 h-2.5 rounded-full bg-zinc-950 border border-amber-500/40" />
+            </div>
+
+            {/* VERTICAL PERFORATED DIVIDER — sm+ */}
+            <div className="hidden sm:block relative flex-shrink-0">
+              <div className="absolute inset-0 flex flex-col items-center justify-center px-1">
+                <div className="w-px h-full"
+                  style={{
+                    backgroundImage: `repeating-linear-gradient(to bottom, #D4AF37 0px, #D4AF37 2px, transparent 2px, transparent 8px)`,
                   }}
                 />
               </div>
@@ -138,18 +157,18 @@ function TicketCard({
               <div className="absolute left-1/2 -translate-x-1/2 bottom-0 -mb-2 w-3 h-3 rounded-full bg-zinc-950 border border-amber-500/40" />
             </div>
 
-            {/* RIGHT SECTION */}
-            <div className="w-36 sm:w-44 p-4 sm:p-6 flex flex-col items-center justify-center flex-shrink-0 bg-zinc-900/80">
+            {/* BOTTOM / RIGHT — QR SECTION */}
+            <div className="w-full sm:w-36 md:w-44 p-5 sm:p-4 md:p-6 flex flex-col items-center justify-center flex-shrink-0 bg-zinc-900/80">
               <div className="bg-white rounded-xl p-1.5 shadow-lg">
                 <canvas
                   ref={(el) => { canvasRefs.current[ticket.id] = el; }}
-                  className="block w-[120px] h-[120px] sm:w-[140px] sm:h-[140px]"
+                  className="block w-[200px] h-[200px] sm:w-[140px] sm:h-[140px] md:w-[160px] md:h-[160px]"
                 />
               </div>
-              <p className="text-[10px] text-amber-500/70 font-mono mt-3 tracking-wider">
+              <p className="text-[9px] sm:text-[10px] text-amber-500/70 font-mono mt-2.5 sm:mt-3 tracking-wider break-all text-center max-w-full">
                 N° {ticket.secureToken.slice(0, 8).toUpperCase()}
               </p>
-              <div className={`mt-3 flex items-center gap-1.5 text-[10px] font-semibold px-2.5 py-1 rounded-full ${
+              <div className={`mt-2.5 sm:mt-3 flex items-center gap-1.5 text-[9px] sm:text-[10px] font-semibold px-2.5 py-1 rounded-full whitespace-nowrap ${
                 ticket.isUsed ? "bg-red-500/15 text-red-400" : "bg-emerald-500/15 text-emerald-400"
               }`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${ticket.isUsed ? "bg-red-400" : "bg-emerald-400"}`} />
@@ -161,7 +180,7 @@ function TicketCard({
           {/* Used watermark */}
           {ticket.isUsed && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
-              <p className="text-7xl sm:text-8xl font-black text-red-500/10 rotate-[-25deg] font-display tracking-widest">
+              <p className="text-5xl sm:text-7xl md:text-8xl font-black text-red-500/10 rotate-[-25deg] font-display tracking-widest select-none">
                 UTILISÉ
               </p>
             </div>
@@ -188,15 +207,15 @@ export function OrderStatusView({ order }: OrderStatusViewProps) {
   if (order.status === "PENDING") {
     return (
       <div className="min-h-screen flex items-center justify-center px-4 bg-zinc-950">
-        <Card className="p-10 max-w-lg w-full text-center border-zinc-800 bg-zinc-900">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-amber-500/20 text-amber-400 mb-6 animate-pulse-slow">
-            <Clock className="w-10 h-10" />
+        <Card className="p-8 sm:p-10 max-w-lg w-full text-center border-zinc-800 bg-zinc-900">
+          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-amber-500/20 text-amber-400 mb-5 sm:mb-6 animate-pulse-slow">
+            <Clock className="w-8 h-8 sm:w-10 sm:h-10" />
           </div>
-          <h1 className="font-display text-2xl font-bold text-white mb-3">Paiement en attente de vérification</h1>
-          <p className="text-zinc-400 mb-2">Merci {order.buyerName} ! Votre commande est en cours de traitement.</p>
-          <p className="text-zinc-500 text-sm mb-6">Notre équipe vérifie manuellement votre transfert MTN MoMo.</p>
-          <div className="animate-blink inline-flex items-center gap-3 text-sm bg-zinc-800 rounded-xl px-5 py-3 mb-6">
-            <div className="w-2 h-2 rounded-full bg-amber-400" />
+          <h1 className="font-display text-xl sm:text-2xl font-bold text-white mb-3">Paiement en attente de vérification</h1>
+          <p className="text-zinc-400 text-sm sm:text-base mb-2">Merci {order.buyerName} ! Votre commande est en cours de traitement.</p>
+          <p className="text-zinc-500 text-xs sm:text-sm mb-5 sm:mb-6">Notre équipe vérifie manuellement votre transfert MTN MoMo.</p>
+          <div className="animate-blink inline-flex items-center gap-2 sm:gap-3 text-xs sm:text-sm bg-zinc-800 rounded-xl px-4 sm:px-5 py-2.5 sm:py-3 mb-5 sm:mb-6">
+            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-amber-400" />
             <span className="text-zinc-300">Vérification en cours...</span>
           </div>
           <Button variant="secondary" fullWidth onClick={() => window.location.reload()}>
@@ -209,29 +228,29 @@ export function OrderStatusView({ order }: OrderStatusViewProps) {
 
   if (order.status === "VALIDATED") {
     return (
-      <div className="max-w-3xl mx-auto space-y-8 py-10 px-4 bg-zinc-950 min-h-screen">
-        <div className="text-center space-y-3 no-print">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-emerald-500/20 text-emerald-400">
-            <CheckCircle className="w-10 h-10" />
+      <div className="max-w-3xl mx-auto space-y-6 sm:space-y-8 py-8 sm:py-10 px-3 sm:px-4 bg-zinc-950 min-h-screen">
+        <div className="text-center space-y-2 sm:space-y-3 no-print">
+          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-emerald-500/20 text-emerald-400">
+            <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10" />
           </div>
-          <h1 className="font-display text-3xl font-bold text-white">Paiement confirmé !</h1>
-          <p className="text-zinc-400">{order.tickets.length} ticket{order.tickets.length > 1 ? "s" : ""} pour {order.buyerName}</p>
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-white">Paiement confirmé !</h1>
+          <p className="text-zinc-400 text-sm sm:text-base">{order.tickets.length} ticket{order.tickets.length > 1 ? "s" : ""} pour {order.buyerName}</p>
         </div>
 
-        <Card className="p-6 no-print border-zinc-800 bg-zinc-900/80">
+        <Card className="p-4 sm:p-6 no-print border-zinc-800 bg-zinc-900/80">
           <div className="flex justify-between items-center">
             <div>
-              <p className="text-zinc-400 text-sm">Total payé</p>
-              <p className="text-2xl font-bold text-amber-400">{formatPrice(order.totalAmount)}</p>
+              <p className="text-zinc-400 text-xs sm:text-sm">Total payé</p>
+              <p className="text-lg sm:text-2xl font-bold text-amber-400">{formatPrice(order.totalAmount)}</p>
             </div>
             <div className="text-right">
-              <p className="text-zinc-400 text-sm">Statut</p>
-              <p className="text-emerald-400 font-semibold">Validé</p>
+              <p className="text-zinc-400 text-xs sm:text-sm">Statut</p>
+              <p className="text-emerald-400 font-semibold text-sm sm:text-base">Validé</p>
             </div>
           </div>
         </Card>
 
-        <div className="space-y-6">
+        <div className="space-y-5 sm:space-y-6">
           {order.tickets.map((ticket, idx) => (
             <TicketCard
               key={ticket.id}
@@ -244,13 +263,13 @@ export function OrderStatusView({ order }: OrderStatusViewProps) {
           ))}
         </div>
 
-        <div className="flex justify-center gap-4 no-print pt-4">
+        <div className="flex justify-center no-print pt-2 sm:pt-4">
           <Button variant="secondary" onClick={() => window.print()}>
             <Printer className="w-4 h-4" /> Télécharger / Imprimer
           </Button>
         </div>
 
-        <p className="text-center text-zinc-700 text-xs no-print pb-8">
+        <p className="text-center text-zinc-700 text-[10px] sm:text-xs no-print pb-6 sm:pb-8">
           Présentez ce billet (numérique ou imprimé) au contrôle d&apos;accès.
         </p>
       </div>
@@ -259,13 +278,13 @@ export function OrderStatusView({ order }: OrderStatusViewProps) {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-zinc-950">
-      <Card className="p-10 max-w-lg w-full text-center border-zinc-800 bg-zinc-900">
-        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-red-500/20 text-red-400 mb-6">
-          <AlertCircle className="w-10 h-10" />
+      <Card className="p-8 sm:p-10 max-w-lg w-full text-center border-zinc-800 bg-zinc-900">
+        <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-red-500/20 text-red-400 mb-5 sm:mb-6">
+          <AlertCircle className="w-8 h-8 sm:w-10 sm:h-10" />
         </div>
-        <h1 className="font-display text-2xl font-bold text-white mb-3">Paiement rejeté</h1>
-        <p className="text-zinc-400 mb-6">Votre commande a été rejetée. La référence MTN MoMo fournie est incorrecte.</p>
-        <p className="text-zinc-500 text-sm">Veuillez réessayer ou contacter l&apos;organisateur.</p>
+        <h1 className="font-display text-xl sm:text-2xl font-bold text-white mb-3">Paiement rejeté</h1>
+        <p className="text-zinc-400 text-sm sm:text-base mb-5 sm:mb-6">Votre commande a été rejetée. La référence MTN MoMo fournie est incorrecte.</p>
+        <p className="text-zinc-500 text-xs sm:text-sm">Veuillez réessayer ou contacter l&apos;organisateur.</p>
       </Card>
     </div>
   );

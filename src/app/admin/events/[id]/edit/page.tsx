@@ -31,6 +31,8 @@ export default async function EditEventPage({ params }: Props) {
         location: event.location,
         coverImage: event.coverImage,
         ticketBackgroundUrl: event.ticketBackgroundUrl,
+        ticketEyebrowText: event.ticketEyebrowText ?? "INVITATION",
+        ticketQuoteText: event.ticketQuoteText ?? "Une soirée d'exception vous attend",
         categories: event.categories.map((c) => ({
           id: c.id,
           name: c.name,

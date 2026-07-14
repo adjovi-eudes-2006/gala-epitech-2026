@@ -141,6 +141,8 @@ export async function getOrderById(orderId: string) {
       eventDate: order.event.date.toISOString(),
       eventLocation: order.event.location,
       ticketBackgroundUrl: order.event.ticketBackgroundUrl ?? undefined,
+      ticketEyebrowText: order.event.ticketEyebrowText ?? "INVITATION",
+      ticketQuoteText: order.event.ticketQuoteText ?? "Une soirée d'exception vous attend",
       createdAt: order.createdAt.toISOString(),
     };
   } catch {
