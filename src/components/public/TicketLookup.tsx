@@ -76,7 +76,7 @@ export function TicketLookup() {
             {!found ? (
               <form onSubmit={handleSearch} className="space-y-4">
                 <p className="text-sm text-zinc-400">
-                  Entrez le numéro de téléphone et la référence MTN MoMo utilisés lors de l&apos;achat.
+                  Entrez le numéro de téléphone et l'ID de transaction MoMo utilisés lors de l&apos;achat.
                 </p>
                 <input
                   type="tel"
@@ -90,7 +90,7 @@ export function TicketLookup() {
                   type="text"
                   value={reference}
                   onChange={(e) => setReference(e.target.value)}
-                  placeholder="Référence MTN MoMo"
+                  placeholder="ID de transaction MoMo"
                   className="w-full px-4 py-3 rounded-xl bg-zinc-800 border border-zinc-700 text-white placeholder:text-zinc-600 focus:border-gala-500 focus:outline-none text-lg"
                 />
                 {error && (

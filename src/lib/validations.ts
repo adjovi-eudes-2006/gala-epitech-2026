@@ -14,13 +14,13 @@ export const orderSchema = z.object({
       /^(\+229\d{8}|\d{8,15})$/,
       "Numéro de téléphone invalide (format: +229XXXXXXXX ou 8 à 15 chiffres)"
     ),
-  referenceMomo: z
+  momoTransactionId: z
     .string()
-    .min(8, "La référence MTN MoMo doit contenir au moins 8 caractères")
-    .max(14, "La référence MTN MoMo ne peut dépasser 14 caractères")
+    .min(8, "L'ID de transaction MoMo doit contenir au moins 8 caractères")
+    .max(14, "L'ID de transaction MoMo ne peut dépasser 14 caractères")
     .regex(
       /^[A-Za-z0-9]{8,14}$/,
-      "La référence MTN MoMo doit être une chaîne alphanumérique de 8 à 14 caractères"
+      "L'ID de transaction MoMo doit être une chaîne alphanumérique de 8 à 14 caractères"
     ),
   items: z
     .array(

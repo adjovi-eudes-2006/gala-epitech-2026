@@ -63,7 +63,7 @@ export async function validateTicketEntry(
 
 export async function getMyTicket(
   phone: string,
-  momoReference: string
+  momoTransactionId: string
 ): Promise<{
   success: boolean;
   error?: string;
@@ -73,14 +73,14 @@ export async function getMyTicket(
   tickets?: { id: string; secureToken: string; categoryName: string }[];
 }> {
   try {
-    if (!phone || phone.trim().length < 4 || !momoReference || momoReference.trim().length < 4) {
+    if (!phone || phone.trim().length < 4 || !momoTransactionId || momoTransactionId.trim().length < 4) {
       return { success: false, error: "Informations invalides ou billet introuvable" };
     }
 
     const order = await prisma.order.findFirst({
       where: {
         buyerPhone: phone.trim(),
-        referenceMomo: momoReference.trim(),
+        momoTransactionId: momoTransactionId.trim(),
       },
       include: {
         tickets: { include: { category: true } },
@@ -126,7 +126,7 @@ export async function getOrderById(orderId: string) {
       buyerName: order.buyerName,
       buyerEmail: order.buyerEmail,
       buyerPhone: order.buyerPhone,
-      referenceMomo: order.referenceMomo,
+      momoTransactionId: order.momoTransactionId,
       totalAmount: order.totalAmount,
       status: order.status,
       tickets: order.tickets.map((t) => ({
@@ -157,7 +157,7 @@ export async function createOrder(formData: FormData) {
     const buyerName = formData.get("buyerName") as string;
     const buyerEmail = formData.get("buyerEmail") as string;
     const buyerPhone = formData.get("buyerPhone") as string;
-    const referenceMomo = formData.get("referenceMomo") as string;
+    const momoTransactionId = formData.get("momoTransactionId") as string;
     const cartJson = formData.get("cart") as string;
 
     let cart: { categoryId: string; quantity: number }[];
@@ -172,7 +172,7 @@ export async function createOrder(formData: FormData) {
       buyerName,
       buyerEmail,
       buyerPhone,
-      referenceMomo,
+      momoTransactionId,
       items: cart,
     });
 
@@ -183,12 +183,12 @@ export async function createOrder(formData: FormData) {
 
     if (!event) return { success: false, error: "Événement introuvable" };
 
-    const existingReference = await prisma.order.findUnique({
-      where: { referenceMomo: validated.referenceMomo },
+    const existingTransaction = await prisma.order.findUnique({
+      where: { momoTransactionId: validated.momoTransactionId },
     });
 
-    if (existingReference) {
-      return { success: false, error: "Cette référence MTN MoMo a déjà été utilisée" };
+    if (existingTransaction) {
+      return { success: false, error: "Cet ID de transaction MoMo a déjà été utilisé" };
     }
 
     let totalAmount = 0;
@@ -217,7 +217,7 @@ export async function createOrder(formData: FormData) {
         buyerName: validated.buyerName,
         buyerEmail: validated.buyerEmail,
         buyerPhone: validated.buyerPhone,
-        referenceMomo: validated.referenceMomo,
+        momoTransactionId: validated.momoTransactionId,
         totalAmount,
         status: "PENDING",
         tickets: {
@@ -234,7 +234,7 @@ export async function createOrder(formData: FormData) {
       buyerName: validated.buyerName,
       buyerPhone: validated.buyerPhone,
       buyerEmail: validated.buyerEmail,
-      referenceMomo: validated.referenceMomo,
+      momoTransactionId: validated.momoTransactionId,
       totalAmount,
       eventTitle: event.title,
       ticketCount: ticketEntries.length,

@@ -23,7 +23,7 @@ export interface OrderData {
   buyerName: string;
   buyerEmail: string;
   buyerPhone: string;
-  referenceMomo: string;
+  momoTransactionId: string;
   totalAmount: number;
   status: string;
   tickets: TicketData[];

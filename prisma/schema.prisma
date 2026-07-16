@@ -41,7 +41,7 @@ model Order {
   buyerName     String
   buyerEmail    String
   buyerPhone    String
-  referenceMomo String   @unique
+  momoTransactionId String   @unique
   totalAmount   Int
   status        String   @default("PENDING")
   createdAt     DateTime @default(now())

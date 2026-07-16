@@ -31,7 +31,7 @@ export function CheckoutPageClient({ eventId, eventTitle, cart, total, paySettin
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [form, setForm] = useState({ buyerName: "", buyerEmail: "", buyerPhone: "", referenceMomo: "" });
+  const [form, setForm] = useState({ buyerName: "", buyerEmail: "", buyerPhone: "", momoTransactionId: "" });
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const validate = () => {
@@ -40,7 +40,7 @@ export function CheckoutPageClient({ eventId, eventTitle, cart, total, paySettin
     if (!form.buyerEmail.trim()) errs.buyerEmail = "Requis";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.buyerEmail)) errs.buyerEmail = "Email invalide";
     if (!form.buyerPhone.trim()) errs.buyerPhone = "Requis";
-    if (!form.referenceMomo.trim()) errs.referenceMomo = "Requis";
+    if (!form.momoTransactionId.trim()) errs.momoTransactionId = "Requis";
     setFieldErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -56,7 +56,7 @@ export function CheckoutPageClient({ eventId, eventTitle, cart, total, paySettin
     fd.append("buyerName", form.buyerName);
     fd.append("buyerEmail", form.buyerEmail);
     fd.append("buyerPhone", form.buyerPhone);
-    fd.append("referenceMomo", form.referenceMomo);
+    fd.append("momoTransactionId", form.momoTransactionId);
     fd.append("cart", JSON.stringify(cart.map((c) => ({ categoryId: c.categoryId, quantity: c.quantity }))));
 
     const result = await createOrder(fd);
@@ -154,11 +154,11 @@ export function CheckoutPageClient({ eventId, eventTitle, cart, total, paySettin
             icon={<Phone className="w-4 h-4" />}
           />
           <Input
-            label="Référence MTN MoMo *"
-            placeholder="Ex: MOMO123456"
-            value={form.referenceMomo}
-            onChange={(e) => setForm({ ...form, referenceMomo: e.target.value })}
-            error={fieldErrors.referenceMomo}
+            label="ID de transaction MoMo *"
+            placeholder="Ex: 650123456789"
+            value={form.momoTransactionId}
+            onChange={(e) => setForm({ ...form, momoTransactionId: e.target.value })}
+            error={fieldErrors.momoTransactionId}
             icon={<KeyRound className="w-4 h-4" />}
           />
 

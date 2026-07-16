@@ -290,7 +290,7 @@ export function OrderStatusView({ order }: OrderStatusViewProps) {
           <AlertCircle className="w-8 h-8 sm:w-10 sm:h-10" />
         </div>
         <h1 className="font-display text-xl sm:text-2xl font-bold text-white mb-3">Paiement rejeté</h1>
-        <p className="text-zinc-400 text-sm sm:text-base mb-5 sm:mb-6">Votre commande a été rejetée. La référence MTN MoMo fournie est incorrecte.</p>
+        <p className="text-zinc-400 text-sm sm:text-base mb-5 sm:mb-6">Votre commande a été rejetée. L'ID de transaction MoMo fourni est incorrect.</p>
         <p className="text-zinc-500 text-xs sm:text-sm">Veuillez réessayer ou contacter l&apos;organisateur.</p>
       </Card>
     </div>

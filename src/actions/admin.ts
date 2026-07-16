@@ -160,7 +160,7 @@ export async function getDashboardData(): Promise<DashboardData | null> {
         buyerName: o.buyerName,
         buyerEmail: o.buyerEmail,
         buyerPhone: o.buyerPhone,
-        referenceMomo: o.referenceMomo,
+        momoTransactionId: o.momoTransactionId,
         totalAmount: o.totalAmount,
         status: o.status,
         tickets: o.tickets.map((t) => ({

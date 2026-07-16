@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
   }
 
   const existing = await prisma.order.findFirst({
-    where: { referenceMomo: parsed.reference, status: { in: ["VALIDATED", "PAID"] } },
+    where: { momoTransactionId: parsed.reference, status: { in: ["VALIDATED", "PAID"] } },
   });
 
   if (existing) {
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     include: { tickets: true },
   });
 
-  let matchedOrder = candidates.find((o) => o.referenceMomo === parsed.reference);
+  let matchedOrder = candidates.find((o) => o.momoTransactionId === parsed.reference);
 
   if (!matchedOrder) {
     const amountCandidates = candidates.filter((o) => o.totalAmount === parsed.amount);
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
     await prisma.$transaction(async (tx) => {
       await tx.order.update({
         where: { id: matchedOrder!.id },
-        data: { referenceMomo: parsed.reference, status: "VALIDATED" },
+        data: { momoTransactionId: parsed.reference, status: "VALIDATED" },
       });
 
       for (const t of matchedOrder!.tickets) {

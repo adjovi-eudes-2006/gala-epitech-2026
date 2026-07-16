@@ -37,7 +37,7 @@ export function DashboardContent({ data }: DashboardContentProps) {
 
   const pendingFiltered = data.pendingOrders.filter((o) =>
     o.buyerName.toLowerCase().includes(search.toLowerCase()) ||
-    o.referenceMomo.toLowerCase().includes(search.toLowerCase())
+    o.momoTransactionId.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -184,7 +184,7 @@ export function DashboardContent({ data }: DashboardContentProps) {
                         <p className="font-semibold text-white truncate">{order.buyerName}</p>
                         <p className="text-xs text-zinc-500">{order.buyerEmail} · {order.buyerPhone}</p>
                         <div className="flex items-center gap-2 mt-2">
-                          <Badge variant="warning">{order.referenceMomo}</Badge>
+                          <Badge variant="warning">{order.momoTransactionId}</Badge>
                           <span className="text-gala-400 font-bold text-sm">{formatPrice(order.totalAmount)}</span>
                         </div>
                         <p className="text-xs text-zinc-600 mt-1">{formatDateShort(order.createdAt)}</p>
@@ -224,7 +224,7 @@ export function DashboardContent({ data }: DashboardContentProps) {
                 <div key={order.id} className="flex items-center justify-between py-2 border-b border-zinc-800/50 last:border-0">
                   <div className="min-w-0 flex-1">
                     <p className="text-sm text-white font-medium truncate">{order.buyerName}</p>
-                    <p className="text-xs text-zinc-500">{order.referenceMomo}</p>
+                    <p className="text-xs text-zinc-500">{order.momoTransactionId}</p>
                   </div>
                   <span className="text-gala-400 font-bold text-sm flex-shrink-0 ml-3">
                     {formatPrice(order.totalAmount)}

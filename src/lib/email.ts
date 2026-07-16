@@ -13,7 +13,7 @@ interface OrderNotification {
   buyerName: string;
   buyerPhone: string;
   buyerEmail: string;
-  referenceMomo: string;
+  momoTransactionId: string;
   totalAmount: number;
   eventTitle: string;
   ticketCount: number;
@@ -51,7 +51,7 @@ export async function sendNewOrderNotification(order: OrderNotification) {
                   <tr><td style="padding:6px 0;color:#666;font-size:13px">Acheteur</td><td style="padding:6px 0;font-size:14px;font-weight:600;color:#111">${order.buyerName}</td></tr>
                   <tr><td style="padding:6px 0;color:#666;font-size:13px">Téléphone</td><td style="padding:6px 0;font-size:14px;color:#111">${order.buyerPhone}</td></tr>
                   <tr><td style="padding:6px 0;color:#666;font-size:13px">Email</td><td style="padding:6px 0;font-size:14px;color:#111">${order.buyerEmail || "—"}</td></tr>
-                  <tr><td style="padding:6px 0;color:#666;font-size:13px">Référence MoMo</td><td style="padding:6px 0;font-size:14px;font-family:monospace;color:#111">${order.referenceMomo}</td></tr>
+                  <tr><td style="padding:6px 0;color:#666;font-size:13px">ID transaction MoMo</td><td style="padding:6px 0;font-size:14px;font-family:monospace;color:#111">${order.momoTransactionId}</td></tr>
                   <tr><td style="padding:6px 0;color:#666;font-size:13px">Montant</td><td style="padding:6px 0;font-size:16px;font-weight:700;color:#D4AF37">${order.totalAmount.toLocaleString()} FCFA</td></tr>
                   <tr><td style="padding:6px 0;color:#666;font-size:13px">Tickets</td><td style="padding:6px 0;font-size:14px;color:#111">${order.ticketCount}</td></tr>
                 </table>
