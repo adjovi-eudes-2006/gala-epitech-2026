@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { validateOrder, rejectOrder, deleteEvent } from "@/actions/admin";
+import { validateOrder, rejectOrder, deleteEvent, getDashboardData } from "@/actions/admin";
 import { CheckCircle, XCircle, Clock, Search, DollarSign, Ticket, TrendingUp, Pencil } from "lucide-react";
 import { formatPrice, formatDateShort } from "@/lib/utils";
 import type { DashboardData } from "@/types";
@@ -14,10 +14,13 @@ interface DashboardContentProps {
   data: DashboardData;
 }
 
-export function DashboardContent({ data }: DashboardContentProps) {
+export function DashboardContent({ data: initialData }: DashboardContentProps) {
   const router = useRouter();
+  const [data, setData] = useState(initialData);
   const [search, setSearch] = useState("");
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [newOrdersCount, setNewOrdersCount] = useState(0);
+  const prevIdsRef = useRef<Set<string>>(new Set(initialData.pendingOrders.map((o) => o.id)));
 
   const handleValidate = useCallback(async (orderId: string) => {
     setProcessingId(orderId);
@@ -34,6 +37,23 @@ export function DashboardContent({ data }: DashboardContentProps) {
     if (result.success) router.refresh();
     else alert(result.error || "Erreur");
   }, [router]);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const fresh = await getDashboardData();
+      if (!fresh) return;
+      const newIds = fresh.pendingOrders.map((o) => o.id);
+      const added = newIds.filter((id) => !prevIdsRef.current.has(id));
+      if (added.length > 0) {
+        setNewOrdersCount((c) => c + added.length);
+        setTimeout(() => setNewOrdersCount(0), 6000);
+      }
+      prevIdsRef.current = new Set(newIds);
+      setData(fresh);
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const pendingFiltered = data.pendingOrders.filter((o) =>
     o.buyerName.toLowerCase().includes(search.toLowerCase()) ||
@@ -165,6 +185,11 @@ export function DashboardContent({ data }: DashboardContentProps) {
               <h2 className="font-display text-lg font-bold text-white flex items-center gap-2">
                 <Clock className="w-5 h-5 text-yellow-400" />
                 Commandes en attente ({data.pendingOrders.length})
+                {newOrdersCount > 0 && (
+                  <span className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-semibold animate-pulse">
+                    +{newOrdersCount} nouvelle{newOrdersCount > 1 ? "s" : ""}
+                  </span>
+                )}
               </h2>
             </div>
 

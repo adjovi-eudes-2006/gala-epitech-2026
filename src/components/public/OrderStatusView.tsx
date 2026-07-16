@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import QRCode from "qrcode";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Printer, CheckCircle, Clock, AlertCircle, Calendar, MapPin, Shirt } from "lucide-react";
 import { formatPrice, formatDateShort } from "@/lib/utils";
+import { getOrderById } from "@/actions/tickets";
 
 interface OrderStatusViewProps {
   order: {
@@ -204,12 +205,44 @@ function TicketCard({
   );
 }
 
-export function OrderStatusView({ order }: OrderStatusViewProps) {
+export function OrderStatusView({ order: initialOrder }: OrderStatusViewProps) {
   const canvasRefs = useRef<Record<string, HTMLCanvasElement | null>>({});
+  const [order, setOrder] = useState(initialOrder);
+  const [polling, setPolling] = useState(false);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const fetchOrder = useCallback(async () => {
+    const updated = await getOrderById(initialOrder.id);
+    if (updated && updated.status !== order.status) {
+      setOrder(updated as typeof order);
+    }
+  }, [initialOrder.id, order.status]);
 
   useEffect(() => {
-    localStorage.setItem("last_gala_order_id", order.id);
-  }, [order.id]);
+    localStorage.setItem("last_gala_order_id", initialOrder.id);
+  }, [initialOrder.id]);
+
+  useEffect(() => {
+    if (order.status !== "PENDING") {
+      if (pollRef.current) {
+        clearInterval(pollRef.current);
+        pollRef.current = null;
+        setPolling(false);
+      }
+      return;
+    }
+
+    setPolling(true);
+    pollRef.current = setInterval(fetchOrder, 5000);
+
+    return () => {
+      if (pollRef.current) {
+        clearInterval(pollRef.current);
+        pollRef.current = null;
+        setPolling(false);
+      }
+    };
+  }, [order.status, fetchOrder]);
 
   if (order.status === "PENDING") {
     return (
@@ -223,9 +256,9 @@ export function OrderStatusView({ order }: OrderStatusViewProps) {
           <p className="text-zinc-500 text-xs sm:text-sm mb-5 sm:mb-6">Notre équipe vérifie manuellement votre transfert MTN MoMo.</p>
           <div className="animate-blink inline-flex items-center gap-2 sm:gap-3 text-xs sm:text-sm bg-zinc-800 rounded-xl px-4 sm:px-5 py-2.5 sm:py-3 mb-5 sm:mb-6">
             <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-amber-400" />
-            <span className="text-zinc-300">Vérification en cours...</span>
+            <span className="text-zinc-300">Vérification en cours...{polling ? " (auto)" : ""}</span>
           </div>
-          <Button variant="secondary" fullWidth onClick={() => window.location.reload()}>
+          <Button variant="secondary" fullWidth onClick={() => { fetchOrder(); }}>
             Rafraîchir le statut
           </Button>
         </Card>
