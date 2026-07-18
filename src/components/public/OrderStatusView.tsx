@@ -151,16 +151,9 @@ function TicketCard({
             </div>
 
             {/* VERTICAL PERFORATED DIVIDER — sm+ */}
-            <div className="hidden sm:block relative flex-shrink-0 self-stretch">
-              <div className="absolute inset-0 flex flex-col items-center justify-center px-1">
-                <div className="w-px h-full"
-                  style={{
-                    backgroundImage: `repeating-linear-gradient(to bottom, #D4AF37 0px, #D4AF37 2px, transparent 2px, transparent 8px)`,
-                  }}
-                />
-              </div>
-              <div className="absolute left-1/2 -translate-x-1/2 top-0 -mt-2 w-3 h-3 rounded-full bg-zinc-950 border border-amber-500/40" />
-              <div className="absolute left-1/2 -translate-x-1/2 bottom-0 -mb-2 w-3 h-3 rounded-full bg-zinc-950 border border-amber-500/40" />
+            <div className="hidden sm:block self-stretch border-l border-dashed border-amber-500/40 relative mx-3">
+              <div className="absolute left-1/2 -translate-x-1/2 top-0 -mt-2 w-3 h-3 rounded-full bg-zinc-950 border border-amber-500/40 z-10" />
+              <div className="absolute left-1/2 -translate-x-1/2 bottom-0 -mb-2 w-3 h-3 rounded-full bg-zinc-950 border border-amber-500/40 z-10" />
             </div>
 
             {/* BOTTOM / RIGHT — QR SECTION */}
